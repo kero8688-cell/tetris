@@ -1,6 +1,9 @@
+import os
 import random
 import pygame
 from .pieces import Piece, SHAPE_NAMES, BLACK
+
+BG_IMAGE_PATH = os.path.join(os.path.dirname(__file__), '..', 'bg.jpg')
 
 COLS = 10
 ROWS = 20
@@ -18,6 +21,12 @@ LEVEL_SPEED_UP     = 50    # ms per level
 class Game:
     def __init__(self):
         self.board = [[None] * COLS for _ in range(ROWS)]
+        # 배경 이미지 로드
+        try:
+            raw = pygame.image.load(BG_IMAGE_PATH)
+            self.bg_image = pygame.transform.scale(raw, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        except Exception:
+            self.bg_image = None
         self.score = 0
         self.lines = 0
         self.level = 1
@@ -137,7 +146,10 @@ class Game:
 
     # ── 렌더링 ───────────────────────────────────────────
     def draw(self, screen, fonts):
-        screen.fill(BLACK)
+        if self.bg_image:
+            screen.blit(self.bg_image, (0, 0))
+        else:
+            screen.fill(BLACK)
         self._draw_board(screen)
         self._draw_ghost(screen)
         self._draw_current(screen)
